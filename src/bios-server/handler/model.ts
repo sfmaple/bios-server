@@ -1,0 +1,42 @@
+import get from 'lodash.get';
+import set from 'lodash.set';
+import { buildRelationHandler } from '../../utils';
+import { NO_RETURN_ERROR, UNKNOWN_SERVICE_ERROR } from '../../constants/resData';
+import { TModelConfig, TResData, TContext } from '../../typings';
+
+export default async function(modelConfig: TModelConfig, rest: any, ctx: TContext) {
+  const { resources } = this;
+  const { returnKey, workflow = [] } = modelConfig;
+  if (!returnKey) return NO_RETURN_ERROR;
+  const memory = { params: { data: rest.params } };
+  for (const obj of workflow) {
+    const { type, memory: memoryKey, params = ['params'] } = obj;
+    const current = params.reduce((prev, param) => {
+      const value = get(memory, `${param}.data`);
+      set(prev, param, value);
+      return prev;
+    }, {});
+    let handler: any = null;
+    switch (type) {
+      case 'custom': {
+        handler = obj.handler;
+        break;
+      }
+      case 'service': {
+        const { service } = obj;
+        handler = resources.service[service];
+        break;
+      }
+      case 'relation': {
+        handler = buildRelationHandler({ rest, memory, resources, config: obj });
+        break;
+      }
+    }
+    if (!handler) return UNKNOWN_SERVICE_ERROR;
+    const resData: TResData = await handler(current, ctx);
+    if (resData && resData.code !== 0) return resData;
+    resData && memoryKey && (memory[memoryKey] = resData);
+  }
+  const resData = memory[returnKey];
+  return resData || NO_RETURN_ERROR;
+}
