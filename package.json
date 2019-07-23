@@ -19,7 +19,13 @@
       "git add"
     ]
   },
-  "scripts": {},
+  "scripts": {
+    "lint": "tslint --project tsconfig.json",
+    "test": "jest",
+    "preversion": "npm run link && npm run test",
+    "postversion": "git push && git push --tags",
+    "tsc": "tsc"
+  },
   "dependencies": {
     "glob": "^7.1.4",
     "koa-bodyparser": "^4.2.1",

@@ -1,0 +1,49 @@
+language: node_js
+node_js: "12"
+
+cache:
+  - yarn
+install:
+  - yarn
+
+stages:
+  - name: test
+    if: type IN (pull_request)
+  - name: release
+    if: tag IS present
+  - name: gitbook
+    if: branch = gitbook
+
+jobs:
+  include:
+    - stage: test
+      script:
+        - yarn lint
+        - yarn test
+      on:
+        branch: master
+    - stage: release
+      script: yarn compile
+      deploy:
+        provider: npm
+        email: $NPM_EMAIL
+        api_key: $NPM_TOKEN
+        skip_cleanup: true
+        on:
+          tags: true
+    # - stage: gitbook
+    #   install:
+    #     - yarn global add gitbook-cli
+    #     - gitbook install
+    #   script:
+    #     - gitbook build . ./build
+    #   deploy:
+    #     provider: pages
+    #     keep-history: true
+    #     skip_cleanup: true
+    #     github_token: $GITHUB_TOKEN
+    #     local_dir: build
+    #     name: $GIT_NAME
+    #     email: $GIT_EMAIL
+    #     on:
+    #       branch: master
