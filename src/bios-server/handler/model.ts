@@ -1,13 +1,12 @@
 import get from 'lodash.get';
 import set from 'lodash.set';
 import { buildRelationHandler } from '../../utils';
-import { NO_RETURN_ERROR, UNKNOWN_SERVICE_ERROR } from '../../constants/resData';
 import { TModelConfig, TResData, TContext } from '../../typings';
 
 export default async function(modelConfig: TModelConfig, rest: any, ctx: TContext) {
   const { resources } = this;
   const { returnKey, workflow = [] } = modelConfig;
-  if (!returnKey) return NO_RETURN_ERROR;
+  if (!returnKey) throw new Error(`the returnKey of model config is empty.`);
   const memory = { params: { data: rest.params } };
   for (const obj of workflow) {
     const { type, memory: memoryKey, params = ['params'] } = obj;
@@ -32,11 +31,12 @@ export default async function(modelConfig: TModelConfig, rest: any, ctx: TContex
         break;
       }
     }
-    if (!handler) return UNKNOWN_SERVICE_ERROR;
+    if (!handler) throw new Error('the model service handler is unknown.');
     const resData: TResData = await handler(current, ctx);
     if (resData && resData.code !== 0) return resData;
     resData && memoryKey && (memory[memoryKey] = resData);
   }
   const resData = memory[returnKey];
-  return resData || NO_RETURN_ERROR;
+  if (resData) return resData;
+  throw new Error(`the returnKey of model config is empty.`);
 }

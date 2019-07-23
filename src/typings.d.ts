@@ -1,4 +1,4 @@
-import { Context } from "koa";
+import { Context } from 'koa';
 
 export type TPaths = {
   src: string;
@@ -26,13 +26,14 @@ export type TOption = {
   paths: TPaths;
   config: TConfig;
   resources?: TResources;
+  errorCallback?: Function;
 };
 
 export type TContext = Context & { request: { body: any } };
 export enum EModelType {
-  service = "service",
-  relation = "relation",
-  custom = "custom"
+  service = 'service',
+  relation = 'relation',
+  custom = 'custom'
 }
 export type TWorkflow = {
   type: EModelType;

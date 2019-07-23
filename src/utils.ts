@@ -1,8 +1,7 @@
 import Path from 'path';
 import glob from 'glob';
 import get from 'lodash.get';
-import { UNKNOWN_SERVICE_ERROR, UNKNOWN_RELATION_ERROR, NO_SUPPORT_RELATION_ERROR } from './constants/resData';
-import { TResData } from './typings';
+import { TResData, TContext } from './typings';
 
 export const exportResource = (path: string = '') => {
   if (!path) throw new Error('the path param cannot be empty string.');
@@ -16,23 +15,31 @@ export const exportResource = (path: string = '') => {
   }, {});
   return resources;
 };
+export const errorMiddleware = (errorCallback: Function) => async (ctx: TContext, next: Function) => {
+  try {
+    await next();
+  } catch (error) {
+    console.error(error);
+    errorCallback && errorCallback(error, ctx);
+  }
+};
 export const buildRelationHandler = ({ rest, config, memory, resources }) => async (current: any, ctx: any) => {
   const { relation } = rest;
   const { relationName, relationParam, relationServiceMap } = config;
   let data = get(memory, `${relationParam}.data`);
-  if (!relationParam || !data) return UNKNOWN_RELATION_ERROR;
+  if (!relationParam || !data) throw new Error('the relation of model config is unknown.');
   const isArray = Array.isArray(data);
   isArray || (data = [data]);
   const names = Object.keys(relation);
   if (names.some((name) => !relationServiceMap[name])) {
-    return NO_SUPPORT_RELATION_ERROR;
+    throw new Error(`the ${name} relation of model config is not support.`);
   }
   const allPromise: any[] = [];
   for (const name of names) {
     const relationParams = relation[name];
     const service = relationServiceMap[name];
     const handler = resources.service[service];
-    if (!handler) return UNKNOWN_SERVICE_ERROR;
+    if (!handler) throw new Error('the model service handler is unknown.');
     const relationIdKey = `${relationName}_id`;
     const params = { ...current.params };
     Object.assign(params, relationParams);
