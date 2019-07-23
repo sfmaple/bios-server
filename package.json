@@ -22,7 +22,7 @@
   "scripts": {
     "lint": "tslint --project tsconfig.json",
     "test": "jest",
-    "preversion": "npm run link && npm run test",
+    "preversion": "npm run lint && npm run test",
     "postversion": "git push && git push --tags",
     "compile": "tsc"
   },
