@@ -57,12 +57,14 @@ export default class BiosServer extends Koa {
     routes.forEach((route) => {
       const { name, method = 'all', middleware = [] } = route;
       if (!name || !router[method]) return;
-      const mids = middleware.reduce((prev: Function[], name: string) => {
-        const fn = this.resources.middleware[name];
-        typeof fn !== 'function' && prev.push(fn);
-        return prev;
-      }, []);
-      mids.unshift(errorMiddleware);
+      const mids = middleware.reduce(
+        (prev: Function[], name: string) => {
+          const fn = this.resources.middleware[name];
+          typeof fn !== 'function' && prev.push(fn);
+          return prev;
+        },
+        [errorMiddleware(this.errorCallback)]
+      );
       router[method](`/${name}`, ...mids, async (ctx: TContext) => {
         await handler.call(this, route, ctx);
       });

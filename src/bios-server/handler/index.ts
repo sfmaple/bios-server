@@ -28,6 +28,7 @@ export default async function(route: TRoute, ctx: TContext) {
   const modelConfig = router[key];
   // TODO: middleware 根据不同的 model 进行自定义加载
   models;
-  const memory = { params, relation };
-  return (ctx.body = await handleModel.call(this, modelConfig, memory, ctx));
+  const rest = { params, relation };
+  const resData = await handleModel.call(this, modelConfig, rest, ctx);
+  return (ctx.body = resData);
 }

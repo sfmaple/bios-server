@@ -15,7 +15,7 @@ export const exportResource = (path: string = '') => {
   }, {});
   return resources;
 };
-export const errorMiddleware = (errorCallback: Function) => async (ctx: TContext, next: Function) => {
+export const errorMiddleware = (errorCallback?: Function) => async (ctx: TContext, next: Function) => {
   try {
     await next();
   } catch (error) {
@@ -53,7 +53,7 @@ export const buildRelationHandler = ({ rest, config, memory, resources }) => asy
         })
         .catch(() => {});
     });
-    allPromise.push(promises);
+    allPromise.push(...promises);
   }
   await Promise.all(allPromise);
   isArray || (data = data[0]);

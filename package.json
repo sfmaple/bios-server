@@ -24,7 +24,9 @@
     "test": "jest",
     "preversion": "npm run lint && npm run test",
     "postversion": "git push && git push --tags",
-    "compile": "tsc"
+    "tsc": "tsc",
+    "tsc:watch": "tsc -w",
+    "compile": "npm run tsc"
   },
   "dependencies": {
     "glob": "^7.1.4",
