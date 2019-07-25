@@ -2,11 +2,11 @@ import Path from 'path';
 import Koa from 'koa';
 import bodyParser from 'koa-bodyparser';
 import Router from 'koa-router';
-import handler from './handler';
+import handler from './model';
 import { exportResource, errorMiddleware } from '../utils';
 import { TPaths, TConfig, TResources, TOption, TContext } from '../typings';
 
-export default class BiosServer extends Koa {
+export default class Server extends Koa {
   paths: TPaths;
   config: TConfig;
   resources: TResources;
@@ -66,7 +66,7 @@ export default class BiosServer extends Koa {
         [errorMiddleware(this.errorCallback)]
       );
       router[method](`/${name}`, ...mids, async (ctx: TContext) => {
-        await handler.call(this, route, ctx);
+        await handler.call(this, name, ctx);
       });
     });
     this.use(router.routes()).use(router.allowedMethods());
