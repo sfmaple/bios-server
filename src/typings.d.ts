@@ -31,23 +31,24 @@ export type TOption = {
 
 export type TContext = Context & { request: { body: any } };
 export enum EModelType {
+  custom = 'custom',
   service = 'service',
   relation = 'relation',
-  custom = 'custom'
 }
 export type TWorkflow = {
   isThrow: Boolean;
   type: EModelType;
   memory: string;
   params: string[];
+  depends: string[];
+  // type: custom
+  handler?: Function;
   // type: service
   service: string;
   // type: relation
   relationName?: string;
   relationParam?: string;
   relationServiceMap?: { [key: string]: string };
-  // type: custom
-  handler?: Function;
 };
 export type TModelConfig = {
   returnKey: string;
