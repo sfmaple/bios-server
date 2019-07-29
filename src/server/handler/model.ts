@@ -11,8 +11,9 @@ export default async function(modelConfig: TModelConfig, rest: any, ctx: TContex
   for (const obj of workflow) {
     const { isThrow, type, memory: memoryKey, params = ['params'] } = obj;
     const current = params.reduce((prev, param) => {
-      const value = get(memory, `${param}.data`);
-      set(prev, param, value);
+      const isArray = Array.isArray(param)
+      const value = get(memory, `${isArray ? param[0] : param}.data`);
+      set(prev, isArray ? param[1] : param, value);
       return prev;
     }, {});
     let handler: any = null;
