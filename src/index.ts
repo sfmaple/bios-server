@@ -1,4 +1,4 @@
-import BiosServer from "./bios-server";
+import Server from "./server";
 
 export {};
-export default BiosServer;
+export default Server;

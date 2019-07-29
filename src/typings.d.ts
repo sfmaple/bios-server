@@ -36,6 +36,7 @@ export enum EModelType {
   custom = 'custom'
 }
 export type TWorkflow = {
+  isThrow: Boolean;
   type: EModelType;
   memory: string;
   params: string[];

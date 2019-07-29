@@ -9,7 +9,7 @@ export default async function(modelConfig: TModelConfig, rest: any, ctx: TContex
   if (!returnKey) throw new Error(`the returnKey of model config is empty.`);
   const memory = { params: { data: rest.params } };
   for (const obj of workflow) {
-    const { type, memory: memoryKey, params = ['params'] } = obj;
+    const { isThrow, type, memory: memoryKey, params = ['params'] } = obj;
     const current = params.reduce((prev, param) => {
       const value = get(memory, `${param}.data`);
       set(prev, param, value);
@@ -33,7 +33,7 @@ export default async function(modelConfig: TModelConfig, rest: any, ctx: TContex
     }
     if (!handler) throw new Error('the model service handler is unknown.');
     const resData: TResData = await handler(current, ctx);
-    if (resData && resData.code !== 0) return resData;
+    if (!isThrow && resData && resData.code !== 0) return resData;
     resData && memoryKey && (memory[memoryKey] = resData);
   }
   const resData = memory[returnKey];
