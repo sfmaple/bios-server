@@ -10,10 +10,11 @@ export default async function(modelConfig: TModelConfig, rest: any, ctx: TContex
   const memory = { params: { data: rest.params } };
   for (const obj of workflow) {
     const { isThrow, type, memory: memoryKey, params = ['params'], depends = [] } = obj;
+    if (depends.some((depend) => get(memory, `${depend}.code`) !== 0)) continue;
     const current = params.reduce((prev, param) => {
-      const isArray = Array.isArray(param)
+      const isArray = Array.isArray(param);
       const value = get(memory, `${isArray ? param[0] : param}.data`);
-      set(prev, isArray ? param[1] : param, value);
+      value && set(prev, isArray ? param[1] : param, value);
       return prev;
     }, {});
     let handler: any = null;
@@ -32,7 +33,6 @@ export default async function(modelConfig: TModelConfig, rest: any, ctx: TContex
         break;
       }
     }
-    if (depends.some((depend) => get(memory, `${depend}.data`) !== 0)) break;
     if (!handler) throw new Error('the model service handler is unknown.');
     const resData: TResData = await handler(current, ctx);
     if (!isThrow && resData && resData.code !== 0) return resData;
