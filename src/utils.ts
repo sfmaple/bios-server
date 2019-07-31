@@ -51,7 +51,7 @@ export const buildRelationHandler = ({ rest, config, memory, resources }) => asy
           if (!resData || resData.code !== 0) return;
           resData.data && (relation[name] = resData.data);
         })
-        .catch(() => {});
+        .catch((error: Error) => console.error(error));
     });
     allPromise.push(...promises);
   }
