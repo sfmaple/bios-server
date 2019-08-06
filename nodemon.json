@@ -1,6 +1,6 @@
 {
   "ext": "ts,yaml,js,json",
   "execMap": {
-    "ts": "ts-node"
+    "ts": "node --inspect=9233 --require ts-node/register"
   }
 }
