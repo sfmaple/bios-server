@@ -7,14 +7,20 @@ export default async function(modelConfig: TModelConfig, rest: any, ctx: TContex
   const { resources } = this;
   const { returnKey, workflow = [] } = modelConfig;
   if (!returnKey) throw new Error(`the returnKey of model config is empty.`);
-  const memory = { params: { data: rest.params } };
+  const memory = { params: { code: 0, data: rest.params } };
   for (const obj of workflow) {
     const { isThrow, type, memory: memoryKey, params = ['params'], depends = [] } = obj;
     if (depends.some((depend) => get(memory, `${depend}.code`) !== 0)) continue;
     const current = params.reduce((prev, param) => {
       const isArray = Array.isArray(param);
-      const value = get(memory, `${isArray ? param[0] : param}.data`);
+      const obj = get(memory, `${isArray ? param[0] : param}`, {});
+      const { code, data: value } = obj;
       value && set(prev, isArray ? param[1] : param, value);
+      if (code === 0) {
+        set(prev, isArray ? param[1] : param, value);
+      } else if (code != null) {
+        set(prev, isArray ? param[1] : param, obj);
+      }
       return prev;
     }, {});
     let handler: any = null;
