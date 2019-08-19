@@ -60,7 +60,7 @@ export default class BiosServer extends Koa {
       const mids = middleware.reduce(
         (prev: Function[], name: string) => {
           const fn = this.resources.middleware[name];
-          typeof fn !== 'function' && prev.push(fn);
+          typeof fn === 'function' && prev.push(fn);
           return prev;
         },
         [errorMiddleware(this.errorCallback)]
