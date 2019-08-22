@@ -24,7 +24,7 @@ export const errorMiddleware = (errorCallback?: Function) => async (ctx: TContex
   }
 };
 export const buildRelationHandler = ({ rest, config, memory, resources }) => async (current: any, ctx: any) => {
-  const { relation } = rest;
+  const { relation = {} } = rest;
   const { relationName, relationParam, relationServiceMap } = config;
   let data = get(memory, `${relationParam}.data`);
   if (!relationParam || !data) throw new Error('the relation of model config is unknown.');
