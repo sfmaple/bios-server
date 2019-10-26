@@ -49,7 +49,7 @@ export const buildRelationHandler = ({ rest, config, memory, resources }) => asy
         .then((resData: TResData) => {
           delete relation[relationIdKey];
           if (!resData || resData.code !== 0) return;
-          resData.data && (relation[name] = resData.data);
+          resData.data != null && (relation[name] = resData.data);
         })
         .catch((error: Error) => console.error(error));
     });
