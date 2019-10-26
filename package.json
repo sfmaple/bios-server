@@ -1,6 +1,6 @@
 {
   "name": "bios-server",
-  "version": "0.1.9",
+  "version": "0.1.10",
   "author": "sfmaple",
   "license": "MIT",
   "main": "dist/src/index.js",
