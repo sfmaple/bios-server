@@ -41,8 +41,7 @@ export const buildRelationHandler = ({ rest, config, memory, resources }) => asy
     const handler = resources.service[service];
     if (!handler) throw new Error('the model service handler is unknown.');
     const relationIdKey = `${relationName}_id`;
-    const params = { ...current.params };
-    Object.assign(params, relationParams);
+    const params = Object.assign({}, current.params, { page: 1, limit: 10, filter: {}, order: [] }, relationParams);
     const promises = data.map((relation: any) => {
       relation[relationIdKey] = relation.id;
       return handler({ ...current, params, relation }, ctx)
